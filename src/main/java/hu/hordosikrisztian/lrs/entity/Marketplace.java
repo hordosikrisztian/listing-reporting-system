@@ -5,18 +5,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(schema = "list_rep", name = "marketplaces")
 public class Marketplace extends AbstractEntity {
 
 	@Id
-	@NotNull(message = "Marketplace ID required.")
+	@Column(name = "id")
 	private int id;
 
 	@Column(name = "marketplace_name")
-	@NotNull(message = "Marketplace name required.")
 	@JsonbProperty("marketplace_name")
 	private String marketplaceName;
 
@@ -38,11 +36,6 @@ public class Marketplace extends AbstractEntity {
 
 	public void setMarketplaceName(String marketplaceName) {
 		this.marketplaceName = marketplaceName;
-	}
-
-	@Override
-	public String toString() {
-		return "Marketplace [id=" + id + ", marketplaceName=" + marketplaceName + "]";
 	}
 
 }

@@ -19,25 +19,25 @@ DROP TABLE IF EXISTS
 -- Locations
 CREATE TABLE list_rep.locations (
     id UUID PRIMARY KEY,
-    manager_name VARCHAR(255) NOT NULL,
-    phone VARCHAR(255) NOT NULL,
-    address_primary VARCHAR(255) NOT NULL,
+    manager_name VARCHAR(255) DEFAULT NULL,
+    phone VARCHAR(255) DEFAULT NULL,
+    address_primary VARCHAR(255) DEFAULT NULL,
     address_secondary VARCHAR(255) DEFAULT NULL,
-    country VARCHAR(255) NOT NULL,
-    town VARCHAR(255) NOT NULL,
-    postal_code VARCHAR(255) NOT NULL
+    country VARCHAR(255) DEFAULT NULL,
+    town VARCHAR(255) DEFAULT NULL,
+    postal_code VARCHAR(255) DEFAULT NULL
 );
 
 -- Statuses
 CREATE TABLE list_rep.listing_statuses (
     id INTEGER PRIMARY KEY,
-    status_name VARCHAR(255) NOT NULL
+    status_name VARCHAR(255) DEFAULT NULL
 );
 
 -- Marketplaces
 CREATE TABLE list_rep.marketplaces (
     id INTEGER PRIMARY KEY,
-    marketplace_name VARCHAR(255) NOT NULL
+    marketplace_name VARCHAR(255) DEFAULT NULL
 );
 
 -- Listings

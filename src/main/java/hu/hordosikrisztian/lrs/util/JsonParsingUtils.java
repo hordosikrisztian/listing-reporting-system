@@ -17,7 +17,7 @@ import hu.hordosikrisztian.lrs.exception.InputJsonParsingException;
 public class JsonParsingUtils {
 
 	public static <T> List<T> storeInputJsonDataInEntityList(HttpURLConnection conn, Class<T> clazz) {
-		List<T> entities = new ArrayList<>();
+		List<T> entityList = new ArrayList<>();
 
 		try (InputStream is = conn.getInputStream()) {
 			JsonbConfig jsonbConfig = new JsonbConfig().withFormatting(true);
@@ -28,10 +28,7 @@ public class JsonParsingUtils {
 			for (JsonValue jsonValue : jsonArray) {
 				T entity = jsonb.fromJson(jsonValue.toString(), clazz);
 
-				entities.add(entity);
-
-				// TODO Only for testing purposes - remove.
-				// System.out.println(jsonb.toJson(listing));
+				entityList.add(entity);
 			}
 		} catch (IOException e) {
 			throw new InputJsonParsingException("Exception while parsing input JSON: ", e);
@@ -39,7 +36,7 @@ public class JsonParsingUtils {
 			conn.disconnect();
 		}
 
-		return entities;
+		return entityList;
 	}
 
 }

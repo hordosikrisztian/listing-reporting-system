@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 
@@ -16,38 +15,32 @@ import org.hibernate.annotations.Type;
 public class Location extends AbstractEntity {
 
 	@Id
-	@NotNull(message = "Location ID required.")
+	@Column(name = "id")
 	@Type(type = "pg-uuid")
 	private UUID id;
 
 	@Column(name = "manager_name")
-	@NotNull(message = "Manager name required.")
 	@JsonbProperty("manager_name")
 	private String managerName;
 
 	@Column(name = "phone")
-	@NotNull(message = "Phone number required.")
 	private String phone;
 
 	@Column(name = "address_primary")
-	@NotNull(message = "Primary address required.")
 	@JsonbProperty("address_primary")
 	private String addressPrimary;
 
-	@Column(name = "address_secondary", nullable = true)
+	@Column(name = "address_secondary")
 	@JsonbProperty("address_secondary")
 	private String addressSecondary;
 
 	@Column(name = "country")
-	@NotNull(message = "Country required.")
 	private String country;
 
 	@Column(name = "town")
-	@NotNull(message = "Town required.")
 	private String town;
 
 	@Column(name = "postal_code")
-	@NotNull(message = "Postal code required.")
 	@JsonbProperty("postal_code")
 	private String postalCode;
 
@@ -117,13 +110,6 @@ public class Location extends AbstractEntity {
 
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
-	}
-
-	@Override
-	public String toString() {
-		return "Location [id=" + id + ", managerName=" + managerName + ", phone=" + phone + ", addressPrimary="
-				+ addressPrimary + ", addressSecondary=" + addressSecondary + ", country=" + country + ", town=" + town
-				+ ", postalCode=" + postalCode + "]";
 	}
 
 }

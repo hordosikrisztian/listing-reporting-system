@@ -29,7 +29,7 @@ public class ListingReportingSystemMain {
 		HttpURLConnection conn = RestApiConnectionUtils.connectToUrl(restApiEndpoint, requestMethodType);
 
 		List<? extends AbstractEntity> entityList = JsonParsingUtils.storeInputJsonDataInEntityList(conn, entityClass);
-
+		
 		Configuration hibernateConf = null;
 		
 		if (entityClass != Listing.class) {
@@ -38,7 +38,7 @@ public class ListingReportingSystemMain {
 			hibernateConf = HibernateUtils.storeHibernateConfiguration(HIBERNATE_PROPERTIES_FILE, Location.class, ListingStatus.class, Marketplace.class, Listing.class);
 		}
 
-		HibernateUtils.saveToDatabase(hibernateConf, entityList);
+		HibernateUtils.validateAndSaveToDatabase(hibernateConf, entityList);
 	}
 
 }

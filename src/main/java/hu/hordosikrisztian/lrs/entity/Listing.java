@@ -6,16 +6,14 @@ import java.util.UUID;
 
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.json.bind.annotation.JsonbProperty;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
@@ -39,16 +37,12 @@ public class Listing extends AbstractEntity {
 	@Column(name = "description")
 	@NotNull(message = "Description required.")
 	private String description;
-
-	@OneToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE,
-			  			  CascadeType.PERSIST, CascadeType.REFRESH })
-	@JoinColumn(name = "location_id")
-	@NotNull(message = "Location ID required.")
-	private Location location;
 	
-	@Transient
+	@Column(name = "location_id")
+	@NotNull(message = "Location ID required.")
+	@Type(type = "pg-uuid")
 	@JsonbProperty("location_id")
-	private int locationId;
+	private UUID locationId;
 	
 	@Column(name = "listing_price")
 	@NotNull(message = "Listing price required.")
@@ -66,36 +60,28 @@ public class Listing extends AbstractEntity {
 	@NotNull(message = "Quantity required")
 	@Positive(message = "Quantity must be greater than 0.")
 	private int quantity;
-
-	@OneToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE,
-						  CascadeType.PERSIST, CascadeType.REFRESH })
-	@JoinColumn(name = "listing_status_id")
+	
+	@Column(name = "listing_status_id")
 	@NotNull(message = "Listing status ID required.")
-	private ListingStatus listingStatus;
-
-	@Transient
+	@Min(value = 1, message = "Invalid listing status ID.")
+	@Max(value = 3, message = "Invalid listing status ID.")
 	@JsonbProperty("listing_status")
 	private int listingStatusId;
-
-	@OneToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE,
-			  			  CascadeType.PERSIST, CascadeType.REFRESH })
-	@JoinColumn(name = "marketplace_id")
+	
+	@Column(name = "marketplace_id")
 	@NotNull(message = "Marketplace ID required.")
-	private Marketplace marketplace;
-
-	@Transient
 	@JsonbProperty("marketplace")
 	private int marketplaceId;
 
 	@Column(name = "upload_time")
+	@NotNull(message = "Upload time required.")
 	@JsonbProperty("upload_time")
 	@JsonbDateFormat("M/d/yyyy")
 	private LocalDate uploadTime;
 
 	@Column(name = "owner_email_address")
 	@NotNull(message = "Owner e-mail address required.")
-	@Email(regexp = "^([0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})$",
-		   message = "Invalid e-mail address.")
+	@Email(message = "Invalid e-mail address.")
 	@JsonbProperty("owner_email_address")
 	private String ownerEmailAddress;
 
@@ -126,13 +112,13 @@ public class Listing extends AbstractEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	public Location getLocation() {
-		return location;
+	
+	public UUID getLocationId() {
+		return locationId;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setLocationId(UUID locationId) {
+		this.locationId = locationId;
 	}
 
 	public BigDecimal getListingPrice() {
@@ -158,21 +144,21 @@ public class Listing extends AbstractEntity {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-
-	public ListingStatus getListingStatus() {
-		return listingStatus;
+	
+	public int getListingStatusId() {
+		return listingStatusId;
 	}
 
-	public void setListingStatus(ListingStatus listingStatus) {
-		this.listingStatus = listingStatus;
+	public void setListingStatusId(int listingStatusId) {
+		this.listingStatusId = listingStatusId;
+	}
+	
+	public int getMarketplaceId() {
+		return marketplaceId;
 	}
 
-	public Marketplace getMarketplace() {
-		return marketplace;
-	}
-
-	public void setMarketplace(Marketplace marketplace) {
-		this.marketplace = marketplace;
+	public void setMarketplaceId(int marketplaceId) {
+		this.marketplaceId = marketplaceId;
 	}
 
 	public LocalDate getUploadTime() {
@@ -189,14 +175,6 @@ public class Listing extends AbstractEntity {
 
 	public void setOwnerEmailAddress(String ownerEmailAddress) {
 		this.ownerEmailAddress = ownerEmailAddress;
-	}
-
-	@Override
-	public String toString() {
-		return "Listing [id=" + id + ", title=" + title + ", description=" + description + ", location=" + location
-				+ ", listingPrice=" + listingPrice + ", currency=" + currency + ", quantity=" + quantity
-				+ ", listingStatus=" + listingStatus + ", marketplace=" + marketplace + ", uploadTime="
-				+ uploadTime + ", ownerEmailAddress=" + ownerEmailAddress + "]";
 	}
 
 }
