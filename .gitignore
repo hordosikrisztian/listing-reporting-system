@@ -7,4 +7,7 @@
 /target
 
 # Log
-*.csv
+/importLog.csv
+
+# Report
+/listingReport.json

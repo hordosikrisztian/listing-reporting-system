@@ -5,8 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import hu.hordosikrisztian.lrs.exception.HttpURLConnectionException;
-import hu.hordosikrisztian.lrs.rest.endpoints.RequestMethodType;
-import hu.hordosikrisztian.lrs.rest.endpoints.RestApiEndpoints;
+import hu.hordosikrisztian.lrs.restendpoints.RequestMethodType;
+import hu.hordosikrisztian.lrs.restendpoints.RestApiEndpoints;
 
 public class RestApiConnectionUtils {
 

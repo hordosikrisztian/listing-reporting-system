@@ -1,4 +1,4 @@
-package hu.hordosikrisztian.lrs.rest.endpoints;
+package hu.hordosikrisztian.lrs.restendpoints;
 
 public enum RestApiEndpoints {
 

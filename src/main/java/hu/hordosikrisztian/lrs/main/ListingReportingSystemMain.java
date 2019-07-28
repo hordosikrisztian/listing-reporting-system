@@ -1,8 +1,5 @@
 package hu.hordosikrisztian.lrs.main;
 
-import static hu.hordosikrisztian.lrs.dao.ListingDao.MarketplaceName.AMAZON;
-import static hu.hordosikrisztian.lrs.dao.ListingDao.MarketplaceName.EBAY;
-
 import java.net.HttpURLConnection;
 import java.util.List;
 
@@ -14,10 +11,12 @@ import hu.hordosikrisztian.lrs.entity.Listing;
 import hu.hordosikrisztian.lrs.entity.ListingStatus;
 import hu.hordosikrisztian.lrs.entity.Location;
 import hu.hordosikrisztian.lrs.entity.Marketplace;
-import hu.hordosikrisztian.lrs.rest.endpoints.RequestMethodType;
-import hu.hordosikrisztian.lrs.rest.endpoints.RestApiEndpoints;
+import hu.hordosikrisztian.lrs.restendpoints.RequestMethodType;
+import hu.hordosikrisztian.lrs.restendpoints.RestApiEndpoints;
+import hu.hordosikrisztian.lrs.util.FtpUtils;
 import hu.hordosikrisztian.lrs.util.HibernateUtils;
 import hu.hordosikrisztian.lrs.util.JsonParsingUtils;
+import hu.hordosikrisztian.lrs.util.ReportUtils;
 import hu.hordosikrisztian.lrs.util.RestApiConnectionUtils;
 
 public class ListingReportingSystemMain {
@@ -32,28 +31,22 @@ public class ListingReportingSystemMain {
 	private static final List<Class<? extends AbstractEntity>> ENTITY_CLASSES = List.of(Location.class, ListingStatus.class, Marketplace.class, Listing.class);
 	
 	private static final String HIBERNATE_PROPERTIES_FILE = "hibernate.properties";
+	private static final String REPORT_JSON_FILE = "listingReport.json";
 
 	public static void main(String[] args) {		
 		processAndSaveDataForAllEntityClasses(REST_API_ENDPOINTS, RequestMethodType.GET, ENTITY_CLASSES);
 		
-		System.out.println(ListingDao.getTotalListingCount("totalListingCount"));
+		ReportUtils.createJsonReport();
 		
-		System.out.println(ListingDao.getTotalListingCountForMarketplace("totalListingCountForMarketplace", EBAY));
-		System.out.println(ListingDao.getTotalListingPriceForMarketplace("totalListingPriceForMarketplace", EBAY));
-		System.out.println(ListingDao.getAverageListingPriceForMarketplace("averageListingPriceForMarketplace", EBAY));
+		FtpUtils.connectAndUpload(REPORT_JSON_FILE, REPORT_JSON_FILE);
 		
-		System.out.println(ListingDao.getTotalListingCountForMarketplace("totalListingCountForMarketplace", AMAZON));
-		System.out.println(ListingDao.getTotalListingPriceForMarketplace("totalListingPriceForMarketplace", AMAZON));
-		System.out.println(ListingDao.getAverageListingPriceForMarketplace("averageListingPriceForMarketplace", AMAZON));
-		System.out.println(ListingDao.getBestListerEmailAddress(false));
+		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
+		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
+		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
 		
-		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", EBAY));
-		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", EBAY));
-		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", EBAY));
-		
-		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", AMAZON));
-		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", AMAZON));
-		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", AMAZON));
+		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
+		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
+		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
 		
 		System.out.println(ListingDao.getBestListerEmailAddress(true));
 	}

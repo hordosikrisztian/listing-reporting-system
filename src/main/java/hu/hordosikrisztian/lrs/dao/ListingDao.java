@@ -1,7 +1,10 @@
 package hu.hordosikrisztian.lrs.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -85,7 +88,7 @@ public class ListingDao {
 		return averageListingPrice;
 	}
 	
-	public static String getBestListerEmailAddress(boolean monthly) {
+	public static Map<String, String> getBestListerEmailAddress(boolean monthly) {
 		Configuration hibernateConf = configureHibernate();
 		Session session = getSession(hibernateConf);
 		
@@ -99,7 +102,7 @@ public class ListingDao {
 			
 			session.close();
 			
-			return buildResultStringForNativeQuery(results);
+			return fillMapForNativeQuery(results);
 		} else {
 			@SuppressWarnings("unchecked")
 			List<Object[]> results = session.createNamedQuery("bestListerEmailAddressOfTheMonth")
@@ -108,7 +111,7 @@ public class ListingDao {
 			
 			session.close();
 			
-			return buildResultStringForNativeQuery(results);
+			return fillMapForNativeQuery(results);
 		}
 	}
 	
@@ -116,7 +119,7 @@ public class ListingDao {
 	// For monthly reports.
 	///////////////////////
 	
-	public static String getMonthlyResult(String namedNativeQuery, MarketplaceName marketplaceName) {
+	public static Map<String, String> getMonthlyResult(String namedNativeQuery, MarketplaceName marketplaceName) {
 		Configuration hibernateConf = configureHibernate();
 		Session session = getSession(hibernateConf);
 		
@@ -131,7 +134,7 @@ public class ListingDao {
 		
 		session.close();
 		
-		return buildResultStringForNativeQuery(results);
+		return fillMapForNativeQuery(results);
 	}
 	
 	private static Configuration configureHibernate() {
@@ -145,32 +148,44 @@ public class ListingDao {
 		return session;
 	}
 	
-	private static String buildResultStringForNativeQuery(Object[] results) {
+	private static Map<String, String> fillMapForNativeQuery(Object[] results) {
+		Map<String, String> resultMap = new HashMap<>();
 		StringBuilder resultBuilder = new StringBuilder();
 		
 		for (int i = 0; i < results.length; i++) {
 			if (i != results.length - 1) {
-				resultBuilder.append(results[i]).append(", ");
+				resultBuilder.append(results[i]).append(" ");
 			} else {
 				resultBuilder.append(results[i]);
 			}
 		}
 		
-		return resultBuilder.toString();
+		String[] keyAndValue = resultBuilder.toString().split(" ");
+		
+		resultMap.put(keyAndValue[0], keyAndValue[1]);
+		
+		return resultMap;
 	}
 	
-	private static String buildResultStringForNativeQuery(List<Object[]> results) {
+	private static Map<String, String> fillMapForNativeQuery(List<Object[]> results) {
+		Map<String, String> resultMap = new LinkedHashMap<>();
 		StringBuilder resultBuilder = new StringBuilder();
 		
 		for (Object[] result : results) {
 			for (Object object : result) {
-				resultBuilder.append(object).append("\n");
+				resultBuilder.append(object).append(" ");
 			}
 			
 			resultBuilder.append("\n");
 		}
 		
-		return resultBuilder.toString();
+		String[] keysAndValues = resultBuilder.toString().split("\n");
+		
+		for (String keyAndValue : keysAndValues) {
+			resultMap.put(keyAndValue.substring(0, keyAndValue.indexOf(' ')), keyAndValue.substring(keyAndValue.indexOf(' ') + 1).trim());
+		}
+		
+		return resultMap;
 	}
 	
 	public enum MarketplaceName {
