@@ -17,6 +17,9 @@ import hu.hordosikrisztian.lrs.entity.Location;
 import hu.hordosikrisztian.lrs.entity.Marketplace;
 import hu.hordosikrisztian.lrs.util.HibernateUtils;
 
+/**
+ * Class to access data from PostgreSQL database.
+ */
 public class ListingDao {
 	
 	private static final String HIBERNATE_PROPERTIES_FILE = "hibernate.properties";
@@ -137,6 +140,10 @@ public class ListingDao {
 		return fillMapForNativeQuery(results);
 	}
 	
+	///////////////////////////
+	// Hibernate configuration.
+	///////////////////////////
+	
 	private static Configuration configureHibernate() {
 		return HibernateUtils.storeHibernateConfiguration(HIBERNATE_PROPERTIES_FILE, Location.class, ListingStatus.class, Marketplace.class, Listing.class);
 	}
@@ -148,6 +155,7 @@ public class ListingDao {
 		return session;
 	}
 	
+	// Multiple results will be stored in Maps. 
 	private static Map<String, String> fillMapForNativeQuery(Object[] results) {
 		Map<String, String> resultMap = new HashMap<>();
 		StringBuilder resultBuilder = new StringBuilder();
@@ -188,6 +196,7 @@ public class ListingDao {
 		return resultMap;
 	}
 	
+	// Differentiating between marketplaces.
 	public enum MarketplaceName {
 		
 		EBAY("EBAY"),

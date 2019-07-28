@@ -24,6 +24,7 @@ public class FtpUtils {
 			ftpClient.logout();
 			ftpClient.disconnect();
 			
+			// TODO File not found...
 			logger.info("Upload successful.");
 		} catch (IOException e) {
 			throw new FtpException("File not found or FTP connection unsuccessful.", e);

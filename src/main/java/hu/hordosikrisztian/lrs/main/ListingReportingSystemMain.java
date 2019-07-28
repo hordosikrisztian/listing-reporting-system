@@ -2,8 +2,10 @@ package hu.hordosikrisztian.lrs.main;
 
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hibernate.cfg.Configuration;
+import org.hibernate.validator.internal.util.privilegedactions.GetClassLoader;
 
 import hu.hordosikrisztian.lrs.dao.ListingDao;
 import hu.hordosikrisztian.lrs.entity.AbstractEntity;
@@ -19,6 +21,9 @@ import hu.hordosikrisztian.lrs.util.JsonParsingUtils;
 import hu.hordosikrisztian.lrs.util.ReportUtils;
 import hu.hordosikrisztian.lrs.util.RestApiConnectionUtils;
 
+/**
+ * Entry point of the command-line application.
+ */
 public class ListingReportingSystemMain {
 	
 	private static final RestApiEndpoints[] REST_API_ENDPOINTS = {
@@ -32,14 +37,20 @@ public class ListingReportingSystemMain {
 	
 	private static final String HIBERNATE_PROPERTIES_FILE = "hibernate.properties";
 	private static final String REPORT_JSON_FILE = "listingReport.json";
+	
+	private static Logger logger = Logger.getLogger("hu.hordosikrisztian.lrs.main.ListingReportingSystemMain");
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+		logger.info("Processing and saving data for entity classes...");
 		processAndSaveDataForAllEntityClasses(REST_API_ENDPOINTS, RequestMethodType.GET, ENTITY_CLASSES);
 		
+		logger.info("Creating JSON report...");
 		ReportUtils.createJsonReport();
 		
+		logger.info("Connecting to FTP and uploading report...");
 		FtpUtils.connectAndUpload(REPORT_JSON_FILE, REPORT_JSON_FILE);
 		
+		// TODO Solve problem related to looping through Map entries. Queries work, however their results are not included in the report.
 		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
 		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
 		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
@@ -49,8 +60,18 @@ public class ListingReportingSystemMain {
 		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
 		
 		System.out.println(ListingDao.getBestListerEmailAddress(true));
+		
+		// TODO Write JUnit tests.
 	}
 
+	/*
+	 * 1. Connect to REST API
+	 * 2. Receive JSON and map them to entities.
+	 * 3. Configure Hibernate.
+	 * 4. Validate data before persisting.
+	 * 5. Log invalid listings.
+	 * 6. Persist valid entries. 
+	 */
 	private static void processAndSaveData(RestApiEndpoints restApiEndpoint, RequestMethodType requestMethodType, Class<? extends AbstractEntity> entityClass) {
 		HttpURLConnection conn = RestApiConnectionUtils.connectToUrl(restApiEndpoint, requestMethodType);
 
