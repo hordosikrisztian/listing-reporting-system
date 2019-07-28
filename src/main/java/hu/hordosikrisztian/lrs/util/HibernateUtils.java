@@ -21,6 +21,7 @@ import org.hibernate.cfg.Configuration;
 
 import hu.hordosikrisztian.lrs.entity.Listing;
 import hu.hordosikrisztian.lrs.exception.HibernatePropertiesLoadingException;
+import hu.hordosikrisztian.lrs.exception.LogCreationException;
 
 public class HibernateUtils {
 
@@ -48,49 +49,52 @@ public class HibernateUtils {
 		SessionFactory sessionFactory = hibernateConf.buildSessionFactory();
 		Session session = sessionFactory.getCurrentSession();
 
-		Transaction transaction = session.beginTransaction();
-		
 		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 		Validator validator = validatorFactory.getValidator();
+		
+		Transaction transaction = session.beginTransaction();
 		
 		try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File("importLog.csv")))) {
 			String header = "ListingId;MarketplaceName;InvalidField\n";
 			out.write(header.getBytes());
 			
-			List<T> violators = new ArrayList<>();
-			
-			for (T entityListElement : entityList) {
-				if (entityListElement instanceof Listing) {				
-					Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityListElement);
-					
-					if (!constraintViolations.isEmpty()) {
-						for (ConstraintViolation<T> violation : constraintViolations) {
-							String id = ((Listing) entityListElement).getId().toString();
-							String marketplaceName = ((Listing) entityListElement).getMarketplaceId() == 1 ? "EBAY" : "AMAZON";
-							
-							String invalidField = violation.getMessage();
-							String line = id + ";" + marketplaceName + ";" + invalidField + "\n";
-							
-							out.write(line.getBytes());
-						}
-						
-						violators.add(entityListElement);
-					}
-				}
-			}
-			
-			entityList.removeAll(violators);
+			validateEntityListElements(entityList, validator, out);
 			
 			entityList.forEach(e -> session.saveOrUpdate(e));
 		} catch (IOException e) {
-			// TODO Add custom exception.
-			e.printStackTrace();
+			throw new LogCreationException("Error creating import log CSV file: ", e);
 		}
 
 		transaction.commit();
 
 		session.close();
 		sessionFactory.close();
+	}
+
+	private static <T> void validateEntityListElements(List<T> entityList, Validator validator, BufferedOutputStream out) throws IOException {
+		List<T> violators = new ArrayList<>();
+		
+		for (T entityListElement : entityList) {
+			if (entityListElement instanceof Listing) {				
+				Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityListElement);
+				
+				if (!constraintViolations.isEmpty()) {
+					for (ConstraintViolation<T> violation : constraintViolations) {
+						String id = ((Listing) entityListElement).getId().toString();
+						String marketplaceName = ((Listing) entityListElement).getMarketplaceId() == 1 ? "eBay" : "Amazon";
+						String invalidField = violation.getMessage();
+						
+						String line = id + ";" + marketplaceName + ";" + invalidField + "\n";
+						
+						out.write(line.getBytes());
+					}
+					
+					violators.add(entityListElement);
+				}
+			}
+		}
+		
+		entityList.removeAll(violators);
 	}
 
 }

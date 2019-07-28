@@ -10,7 +10,6 @@ import javax.json.JsonArray;
 import javax.json.JsonValue;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
 
 import hu.hordosikrisztian.lrs.exception.InputJsonParsingException;
 
@@ -20,8 +19,7 @@ public class JsonParsingUtils {
 		List<T> entityList = new ArrayList<>();
 
 		try (InputStream is = conn.getInputStream()) {
-			JsonbConfig jsonbConfig = new JsonbConfig().withFormatting(true);
-			Jsonb jsonb = JsonbBuilder.create(jsonbConfig);
+			Jsonb jsonb = JsonbBuilder.create();
 
 			JsonArray jsonArray = jsonb.fromJson(is, JsonArray.class);
 
