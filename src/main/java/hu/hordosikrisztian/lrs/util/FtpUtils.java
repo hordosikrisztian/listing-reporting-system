@@ -12,6 +12,7 @@ public class FtpUtils {
 	
 	private static Logger logger = Logger.getLogger("hu.hordosikrisztian.lrs.util.FtpUtils");
 	
+	// Connects to an FTP server and uploads the JSON file containing the report.
 	public static void connectAndUpload(String localFileName, String givenRemoteFileName) {
 		FTPClient ftpClient = new FTPClient();
 		
@@ -24,7 +25,6 @@ public class FtpUtils {
 			ftpClient.logout();
 			ftpClient.disconnect();
 			
-			// TODO File not found...
 			logger.info("Upload successful.");
 		} catch (IOException e) {
 			throw new FtpException("File not found or FTP connection unsuccessful.", e);

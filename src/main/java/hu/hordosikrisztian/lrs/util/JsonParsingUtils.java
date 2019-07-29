@@ -15,6 +15,7 @@ import hu.hordosikrisztian.lrs.exception.InputJsonParsingException;
 
 public class JsonParsingUtils {
 
+	// Receives/parses JSON from REST API end point, maps it to an entity class.
 	public static <T> List<T> storeInputJsonDataInEntityList(HttpURLConnection conn, Class<T> clazz) {
 		List<T> entityList = new ArrayList<>();
 

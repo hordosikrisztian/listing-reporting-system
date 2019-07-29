@@ -10,6 +10,7 @@ import hu.hordosikrisztian.lrs.restendpoints.RestApiEndpoints;
 
 public class RestApiConnectionUtils {
 
+	// Connects to a URL representing a REST API end point.
 	public static HttpURLConnection connectToUrl(RestApiEndpoints endpoint, RequestMethodType requestMethodType) {
 		HttpURLConnection conn = null;
 

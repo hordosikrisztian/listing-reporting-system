@@ -25,6 +25,7 @@ import hu.hordosikrisztian.lrs.exception.LogCreationException;
 
 public class HibernateUtils {
 
+	// Loads and stores Hibernate-related configuration from a properties file found on the class path.
 	public static Configuration storeHibernateConfiguration(String propertiesFileName, Class<?>... entityClasses) {
 		Properties hibernateProperties = new Properties();
 
@@ -45,6 +46,7 @@ public class HibernateUtils {
 		return hibernateConf;
 	}
 
+	// Validates elements of the input entity list, collects and writes out erroneous entries to a CSV file, saves valid ones.
 	public static <T> void validateAndSaveToDatabase(Configuration hibernateConf, List<T> entityList) {
 		SessionFactory sessionFactory = hibernateConf.buildSessionFactory();
 		Session session = sessionFactory.getCurrentSession();
@@ -71,6 +73,7 @@ public class HibernateUtils {
 		sessionFactory.close();
 	}
 
+	// Checks for constraint violations in the case of listings, lists and writes them to a CSV file.
 	private static <T> void validateEntityListElements(List<T> entityList, Validator validator, BufferedOutputStream out) throws IOException {
 		List<T> violators = new ArrayList<>();
 		
