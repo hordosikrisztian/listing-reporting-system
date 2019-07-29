@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.hibernate.cfg.Configuration;
-import org.hibernate.validator.internal.util.privilegedactions.GetClassLoader;
 
-import hu.hordosikrisztian.lrs.dao.ListingDao;
 import hu.hordosikrisztian.lrs.entity.AbstractEntity;
 import hu.hordosikrisztian.lrs.entity.Listing;
 import hu.hordosikrisztian.lrs.entity.ListingStatus;
@@ -18,7 +16,7 @@ import hu.hordosikrisztian.lrs.restendpoints.RestApiEndpoints;
 import hu.hordosikrisztian.lrs.util.FtpUtils;
 import hu.hordosikrisztian.lrs.util.HibernateUtils;
 import hu.hordosikrisztian.lrs.util.JsonParsingUtils;
-import hu.hordosikrisztian.lrs.util.ReportUtils;
+import hu.hordosikrisztian.lrs.util.JsonReportUtils;
 import hu.hordosikrisztian.lrs.util.RestApiConnectionUtils;
 
 /**
@@ -45,21 +43,10 @@ public class ListingReportingSystemMain {
 		processAndSaveDataForAllEntityClasses(REST_API_ENDPOINTS, RequestMethodType.GET, ENTITY_CLASSES);
 		
 		logger.info("Creating JSON report...");
-		ReportUtils.createJsonReport();
+		JsonReportUtils.createJsonReport();
 		
 		logger.info("Connecting to FTP and uploading report...");
 		FtpUtils.connectAndUpload(REPORT_JSON_FILE, REPORT_JSON_FILE);
-		
-		// TODO Solve problem related to looping through Map entries. Queries work, however their results are not included in the report.
-		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
-		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
-		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.EBAY));
-		
-		System.out.println(ListingDao.getMonthlyResult("totalListingCountPerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
-		System.out.println(ListingDao.getMonthlyResult("totalListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
-		System.out.println(ListingDao.getMonthlyResult("averageListingPricePerMonthForMarketplace", ListingDao.MarketplaceName.AMAZON));
-		
-		System.out.println(ListingDao.getBestListerEmailAddress(true));
 		
 		// TODO Write JUnit tests.
 	}
